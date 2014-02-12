@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>メール配信クラウドサービスの価格比較グラフ</title>
+    <style type="text/css">
+      body{
+        font-size: 12px;
+      }
+      label {
+        margin-right: 10px;
+        line-height: 1.1em;
+      }
+      p.notice{
+        font-size: 0.8em;
+      }
+    </style>
+    
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      
+      var graph_width = "100%";
+      var graph_height = 800;
+
+      var services = {}
+      
+      //
+      //
+      // Amazon
+      //
+      //
+      services['amazon_ses'] = {
+        label: 'Amazon SES *1',
+        price: function(x) {
+          if(x <= 2000*30) {
+            return 0;
+          } else {
+            return (0.1 * ((x-2000*30)/1000));
+          }
+        },
+        checked: true
+      }
+      services['amazon_ses_no_free'] = {
+        label: 'Amazon SES（無料枠なし）',
+        price: function(x) {
+          return (0.1 * (x/1000));
+        }
+      }
+      
+      //
+      //
+      // Sendgrid
+      //
+      //
+      services['sendgrid_lite'] = {
+        label: 'Sendgrid Lite',
+        price: function(x) {
+          return (0.1 * (x/1000));
+        },
+        checked: true
+      }
+      services['sendgrid_bronze'] = {
+        label: 'Sendgrid Bronze',
+        price: function(x) {
+          if(x <= 40000) {
+            return 9.95;
+          } else {
+            return (0.001 * (x-40000)) + 9.95;
+          }
+        },
+        checked: true
+      }
+      services['sendgrid_silver'] = {
+        label: 'Sendgrid Silver',
+        price: function(x) {
+          if(x <= 100000) {
+            return 79.95;
+          } else {
+            return (0.00085 * (x-100000)) + 79.95;
+          }
+        },
+        checked: true
+      }
+      services['sendgrid_gold'] = {
+        label: 'Sendgrid Gold',
+        price: function(x) {
+          if(x <= 300000) {
+            return 199.95;
+          } else {
+            return (0.0005 * (x-300000)) + 199.95;
+          }
+        },
+        checked: true
+      }
+      services['sendgrid_platinum'] = {
+        label: 'Sendgrid Platinum',
+        price: function(x) {
+          if(x <= 700000) {
+            return 399.95;
+          } else {
+            return (0.00045 * (x-700000)) + 399.95;
+          }
+        },
+        checked: true
+      }
+      
+      //
+      //
+      // Sendgrid（日本）
+      //
+      //
+      services['sendgrid_jpy_lite'] = {
+        label: 'Sendgrid Lite（円）',
+        price: function(x) {
+          return (12 * (x/1000));
+        },
+        currency: 'jpy'
+      }
+      services['sendgrid_jpy_jpy_bronze'] = {
+        label: 'Sendgrid Bronze（円）',
+        price: function(x) {
+          if(x <= 40000) {
+            return 1180;
+          } else {
+            return (130 * (x-40000)/1000) + 1180;
+          }
+        },
+        currency: 'jpy'
+      }
+      services['sendgrid_jpy_silver'] = {
+        label: 'Sendgrid Silver（円）',
+        price: function(x) {
+          if(x <= 100000) {
+            return 9480;
+          } else {
+            return (100 * (x-100000)/1000) + 9480;
+          }
+        },
+        currency: 'jpy'
+      }
+      services['sendgrid_jpy_gold'] = {
+        label: 'Sendgrid Gold（円）',
+        price: function(x) {
+          if(x <= 300000) {
+            return 22980;
+          } else {
+            return (60 * (x-300000)/1000) + 22980;
+          }
+        },
+        currency: 'jpy'
+      }
+      
+      //
+      //
+      // Postmark
+      //
+      //
+      services['postmark'] = {
+        label: 'Postmark',
+        price: function(x) {
+          if(x <= 500000) {
+            return 1.5 * (x/1000);
+          } else if(x <= 1000000) {
+            return ((x - 500000)/1000) + (1.5 * (500000/1000));
+          } else if(x <= 2000000) {
+            return (0.75 * (x - 1000000)/1000) + (500000/1000) + (1.5 * (500000/1000));
+          } else {
+            return (0.5 * (x - 2000000)/1000) + (0.75 * (1000000/1000)) + (500000/1000) + (1.5 * (500000/1000));
+          }
+        }
+      }
+      
+      //
+      //
+      // Mailgun
+      //
+      //
+      services['mailgun'] = {
+        label: 'Mailgun',
+        price: function(x) {
+          if(x <= 10000) {
+            return 0;
+          } else if(x <= 510000) {
+            return (0.00050 * (x-10000));
+          } else if(x <= 1510000) {
+            return (0.00035 * (x-510000)) + (0.00050 * 500000);
+          } else if(x <= 6510000) {
+            return (0.00015 * (x-1510000)) + (0.00035 * 1000000) + (0.00050 * 500000);
+          } else {
+            return (0.00010 * (x-6510000)) + (0.00015 * 5000000) + (0.00035 * 1000000) + (0.00050 * 500000);
+          }
+        },
+        checked: true
+      }
+
+      //
+      //
+      // Mailjet
+      //
+      //
+      services['mailjet_bronze'] = {
+        label: 'Mailjet Bronze',
+        price: function(x) {
+          if(x <= 30000) {
+            return 7.49;
+          } else {
+            return (0.001 * (x-30000)) + 7.49;
+          }
+        },
+        checked: true
+      }
+      services['mailjet_silver'] = {
+        label: 'Mailjet Silver',
+        price: function(x) {
+          if(x <= 120000) {
+            return 74.95;
+          } else {
+            return (0.00080 * (x-120000)) + 74.95;
+          }
+        },
+        checked: true
+      }
+      services['mailjet_gold'] = {
+        label: 'Mailjet Gold',
+        price: function(x) {
+          if(x <= 350000) {
+            return 199.95;
+          } else {
+            return (0.00055 * (x-350000)) + 199.95;
+          }
+        },
+        checked: true
+      }
+      services['mailjet_platinum'] = {
+        label: 'Mailjet Platinum',
+        price: function(x) {
+          if(x <= 750000) {
+            return 399.95;
+          } else {
+            return (0.00040 * (x-750000)) + 399.95;
+          }
+        },
+        checked: true
+      }
+      services['mailjet_diamond'] = {
+        label: 'Mailjet Diamond',
+        price: function(x) {
+          if(x <= 2500000) {
+            return 799.95;
+          } else {
+            return (0.00030 * (x-2500000)) + 799.95;
+          }
+        }
+      }
+      
+      //
+      //
+      // Mandrill
+      //
+      //
+      services['mandrill'] = {
+        label: 'Mandrill',
+        price: function(x) {
+          if(x <= 12000) {
+            return 0;
+          } else if(x <= 1012000) {
+            return (0.2 * (x - 12000)/1000);
+          } else if(x <= 6012000) {
+            return (0.15 * (x - 1012000)/1000) + (0.2 * (1000000/1000));
+          } else {
+            return (0.1 * (x - 6012000)/1000) + (0.15 * (5000000/1000)) + (0.2 * (1000000/1000));
+          }
+        },
+        checked: true
+      }
+      services['mandrill_with_ip'] = {
+        label: 'Mandrill（固定IP）',
+        price: function(x) {
+          if(x <= 12000) {
+            return 29.95;
+          } else if(x <= 1012000) {
+            return (0.2 * (x - 12000)/1000) + 29.95;
+          } else if(x <= 6012000) {
+            return (0.15 * (x - 1012000)/1000) + (0.2 * (1000000/1000)) + 29.95;
+          } else {
+            return (0.1 * (x - 6012000)/1000) + (0.15 * (5000000/1000)) + (0.2 * (1000000/1000)) + 29.95;
+          }
+        },
+        checked: true
+      }
+      
+      //
+      //
+      // Elastic Email
+      //
+      //
+      services['elastic_email_lv1'] = {
+        label: 'Elastic Email Level 1 *2',
+        price: function(x) {
+          return (1 * (x/1000));
+        }
+      }
+      services['elastic_email_lv7'] = {
+        label: 'Elastic Email Level 7 *2',
+        price: function(x) {
+          return (0.4 * (x/1000));
+        }
+      }
+      services['elastic_email_lv14'] = {
+        label: 'Elastic Email Level 14 *2',
+        price: function(x) {
+          return (0.08 * (x/1000));
+        }
+      }
+      
+      //
+      //
+      // SocketLabs
+      //
+      //
+      services['socketlabs'] = {
+        label: 'SocketLabs',
+        price: function(x) {
+          if(x <= 500) {
+            return 0;
+          } else if(x <= 10000) {
+            return 39;
+          } else if(x <= 25000) {
+            return 79;
+          } else if(x <= 100000) {
+            return 249;
+          } else if(x <= 500000) {
+            return 449;
+          } else if(x <= 1000000) {
+            return 799;
+          } else {
+            return 0;
+          }
+        },
+        checked: true
+      }
+      
+      //
+      //
+      // LeaderSend
+      //
+      //
+      services['leadersend'] = {
+        label: 'LeaderSend',
+        price: function(x) {
+          return 50;
+        },
+        checked: true
+      }
+      
+      //
+      //
+      // turboSMTP
+      //
+      //
+      services['turbosmtp'] = {
+        label: 'turboSMTP',
+        price: function(x) {
+          if(x <= 6000) {
+            return 0;
+          } else if(x <= 30000) {
+            return 9;
+          } else if(x <= 50000) {
+            return 30;
+          } else if(x <= 100000) {
+            return 70;
+          } else if(x <= 300000) {
+            return 190;
+          } else if(x <= 500000) {
+            return 310;
+          } else if(x <= 1000000) {
+            return 510;
+          } else {
+            return 0;
+          }
+        },
+        checked: true
+      }
+      
+      //
+      //
+      // CritSend
+      //
+      //
+      services['critsend_starter'] = {
+        label: 'CritSend Starter *3',
+        price: function(x) {
+          return (50/100000) * x;
+        }
+      }
+      services['critsend_plus'] = {
+        label: 'CritSend Plus *3',
+        price: function(x) {
+          return (250/500000) * x;
+        }
+      }
+      services['critsend_premium'] = {
+        label: 'CritSend Premium *3',
+        price: function(x) {
+          return (1000/3000000) * x;
+        }
+      }
+      services['critsend_enterprise'] = {
+        label: 'CritSend Enterprise *3',
+        price: function(x) {
+          return (3000/10000000) * x;
+        }
+      }
+      
+      //
+      //
+      // PostageApp
+      //
+      //
+      services['postage'] = {
+        label: 'PostageApp',
+        price: function(x) {
+          if(x <= 10000) {
+            return 9;
+          } else if(x <= 40000) {
+            return 29;
+          } else if(x <= 100000) {
+            return 79;
+          } else if(x <= 400000) {
+            return 199;
+          } else if(x <= 1000000) {
+            return 399;
+          } else {
+            return 0;
+          }
+        },
+        checked: true
+      }
+      
+      //
+      //
+      // NiftyCloud ESS
+      //
+      //
+      services['nifty_ess'] = {
+        label: 'NiftyCloud ESS',
+        price: function(x) {
+          if(x <= 10000) {
+            return 3675;
+          } else if(x <= 30000) {
+            return 10500;
+          } else if(x <= 100000) {
+            return 31500;
+          } else if(x <= 250000) {
+            return 73500;
+          } else if(x <= 500000) {
+            return 136500;
+          } else if(x <= 1000000) {
+            return 168000;
+          } else if(x <= 1500000) {
+            return 199500;
+          } else if(x <= 2000000) {
+            return 231000;
+          } else if(x <= 2500000) {
+            return 262500;
+          } else {
+            return 0;
+          }
+        },
+        currency: 'JPY'
+      }
+      
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(function() {
+        renderServiceFilter();
+        drawMainChart();
+      });
+      
+      function drawMainChart() {
+        try{
+          var calculate_from = parseInt(document.getElementById('calculate_from').value);
+          var calculate_upto = parseInt(document.getElementById('calculate_to').value);
+          var usdjpy = parseInt(document.getElementById('usdjpy').value);
+
+          function usd2jpy(usd) {
+            return usd * usdjpy;
+          }
+
+          var checkboxes = document.querySelectorAll('#service_filter input:checked');
+          var selected_services = [];
+          for(var i=0; i < checkboxes.length; i++) {
+            selected_services.push(services[checkboxes[i].value]);
+          }
+
+          var data = new google.visualization.DataTable();
+          
+          data.addColumn('number', '月間メール配信数');
+          for(var i=0; i<selected_services.length; i++) {
+            data.addColumn('number', selected_services[i].label);
+          }
+          
+          for(var x=calculate_from/1000; x <= (calculate_upto/1000); x++) {
+            var xx = x * 1000;
+            var rows = [xx];
+            for(var i=0; i<selected_services.length; i++) {
+              var service = selected_services[i];
+              var price = service.price(xx);
+              if(!service.currency) price = usd2jpy(price);
+              rows.push(price);
+            }
+            data.addRow(rows);
+          }
+          
+          var formatterX = new google.visualization.NumberFormat(
+            {suffix: '件', pattern: '#,###'}
+          );
+          formatterX.format(data, 0);
+          
+          var formatter = new google.visualization.NumberFormat(
+            {suffix: '円', negativeColor: 'red', negativeParens: false, fractionDigits: 0}
+          );
+          for(var x=1; x < selected_services.length+1; x++) {
+            formatter.format(data, x);
+          }
+          
+          var chart = new google.visualization.LineChart(document.getElementById('main_chart'));
+          chart.draw(data, {
+            width: graph_width,
+            height: graph_height,
+            vAxis: {title: '月額費用 (円)'},
+            hAxis: {title: '月間メール配信数（件）'},
+            explorer: { actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: 0.05 }
+          });
+        }catch(e){
+          console.error(e);
+        }
+      }
+
+      function renderServiceFilter(){
+        var container = document.getElementById('service_filter');
+        var checkbox = '';
+        for(var id in services) {
+          var s = services[id];
+          var label = s.label;
+          var checked = s.checked ? 'checked="checked"' : '';
+          checkbox += '<label for="'+id+'"><input type="checkbox" id="'+id+'" '+checked+' value="'+id+'">'+label+'</label>';
+        }
+        container.innerHTML = checkbox;
+      }
+
+      function toggleAllServiceFilter(check){
+        var checkboxes = document.querySelectorAll('#service_filter input[type=checkbox]');
+        for(var i=0; i < checkboxes.length; i++) {
+          checkboxes[i].checked = check;
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <h1>メール配信サービスの価格比較（2014年2月11日版）</h1>
+
+    <p>月間のメール配信数ごとの各メール配信クラウドサービスの価格比較グラフです。</p>
+
+    <form onsubmit="drawMainChart();return false;">
+      <fieldset>
+        <legend>操作説明</legend>
+        <p>
+          以下の条件を指定して表示ボタンでグラフを再表示します。<br>
+          グラフの右のサービス名をクリックするとそのサービスのグラフが強調表示されます。<br>
+          グラフはドラッグで範囲指定して拡大できます。拡大は右クリックでリセットできます。
+        </p>
+      </fieldset>
+      <fieldset>
+        <legend>条件</legend>
+        <div>メール送信数の表示範囲：<input type="text" id="calculate_from" value="0">〜<input type="text" id="calculate_to" value="500000"></div>
+        <div>ドル円レート：<input type="text" id="usdjpy" value="102.33">（102.33円は2014-02-12 19:39時点のドル円レート）</div>
+        <div id="service_filter">
+        </div>
+        <p class="notice">
+          *1: Amazon SESは1日の2000通の無料枠を毎日（30日）使い切ると想定しています。<br>
+          *2: Elastic Emailは累積配信数が多いほど単価が安くなる価格体系です。1000メールでlevel 1（$1）からlevel 14（$0.08）まで変わります。<br>
+          *3: CritSendはクレジット制です。大量のクレジットを一括で買うと単価が安くなります。<br>
+        </p>
+        <div>
+          <button type="button" onclick="toggleAllServiceFilter(true);">チェックを全てつける</button>
+          <button type="button" onclick="toggleAllServiceFilter(false);">チェックを全て外す</button>
+        </div>
+        <button type="submit">表示</button>
+      </fieldset>
+    </form>
+
+    <div id="main_chart"></div>
+
+    <fieldset>
+      <legend>比較サービス一覧</legend>
+      <ul>
+        <li><a href="http://aws.amazon.com/jp/ses/">Amazon SES</a></li>
+        <li><a href="http://sendgrid.com/">SendGrid</a></li>
+        <li><a href="https://sendgrid.kke.co.jp/">SendGrid（日本代理店）</a></li>
+        <li><a href="http://www.mailgun.com/">Mailgun</a></li>
+        <li><a href="https://postmarkapp.com/">Postmark</a></li>
+        <li><a href="https://www.mailjet.com/">Mailjet</a></li>
+        <li><a href="http://mandrill.com/">Mandrill</a></li>
+        <li><a href="http://www.leadersend.com/">LeaderSend</a></li>
+        <li><a href="http://www.socketlabs.com/">SocketLabs</a></li>
+        <li><a href="http://elasticemail.com/">Elastic Email</a></li>
+        <li><a href="http://www.serversmtp.com/">turboSMTP</a></li>
+        <li><a href="http://postageapp.com/">PostageApp</a></li>
+        <li><a href="http://www.critsend.com/">Critsend</a></li>
+        <li><a href="https://cloud.nifty.com/service/ess.htm">ニフティクラウド ESS</a></li>
+      </ul>
+    </fieldset>
+  </body>
+</html>
